@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/scrollbar.css">
+    <title>Document</title>
+    <link rel="shortcut icon" href="img/icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script defer type="module" src="js/main.js"></script>
+</head>
+
+<body>  
+    
+
+    <!-- <h2>Adaptado do artigo <a href="https://dev.to/eaich/create-an-awesome-js-api-interface-using-fetch-in-less-than-50-lines-3d65">https://dev.to/eaich/create-an-awesome-js-api-interface-using-fetch-in-less-than-50-lines-3d65</a></h2> -->
+
+    <div id="forms" class="form">
+        <h1 class="titulo-login">Trelloso</h1>
+        <!-- <fieldset>
+            <legend>Meus Dados</legend>
+            <span id="me"></span>
+        </fieldset> -->
+
+        <!-- <fieldset>
+            <legend>Cadastrar Usuário</legend>
+            <form id="form-create-user" autocomplete="on">
+                <input type="text" name="name" id="new-name" placeholder="Nome">
+                <input type="text" name="username" id="new-username" placeholder="Username">
+                <input type="password" name="password" id="new-password" placeholder="Password">
+                <input type="text" name="avatar" id="new-avatar" placeholder="Avatar URL">
+                <input type="submit" value="Ok">
+                <input type="reset" value="Cancelar">
+            </form>
+        </fieldset> -->
+
+        <div class="form-container">
+            <form id="form-create-user" class="form-cadastro">
+                <h3>Cadastrar Usuário</h3>
+                <input type="text" name="name" id="new-name" placeholder="Nome">
+                <input type="text" name="username" id="new-username" placeholder="Username">
+                <div class="container-password">
+                    <input type="password" class="passwords" name="password" id="new-password" placeholder="Password">
+                    <button type="button" class="show-hide-password">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+                <input type="text" name="avatar" id="new-avatar" placeholder="Avatar URL">
+                <input type="submit" value="Ok">
+                <button id="cancel-create-user">Cancelar</button>
+            </form>
+            
+            <form id="form-login">
+                <h3>Login</h3>
+                <input type="text" name="username" id="username" class="input-username">
+                <input type="password" name="password" id="password" class="input-senha">
+                <input type="submit" value="Ok" class="botao-ok-login">
+                <input type="reset" value="Cancelar" class="botao-cancelar-login">
+                <button class="botao-cadastro">cadastro</button>
+            </form>
+        </div>
+            
+        <!-- <fieldset>
+            <legend>Listar Usuários</legend>
+            <button id="btn-users">Lista Usuários</button>
+            <ul id="list-users"></ul>
+        </fieldset> -->
+    </div>
+
+    <div id="container-home">
+        <aside>
+            <h1>Trelloso</h1>
+            <button class="show-all">Todos</button>
+            <button id="show-favoritos">Favoritos</button>
+            <button id="button-perfil">perfil</button>
+        </aside>
+
+        <div id="boards-content">
+            <div id="top-bar">
+                <button class="show-all">Home</button>
+                <button id="botao-criar-board">Novo</button>
+                <button id="sair">sair</button>
+                <div id="top-bar-user-image">
+                    <img id="user-image" src="" alt="">
+                </div>
+            </div>
+            <div id="boards-container">
+
+            </div>
+            <div id="board-content">
+                <h3 id="board-content-name"></h3>
+
+                <div id="board-content-container">
+
+                </div>
+            </div>
+            <!-- <div id="boards_favoritos_container">
+
+            </div> -->
+        </div>
+    </div>
+
+    <div id="container-criar-board">
+        <div id="create-board-form">
+            <h2>Criar Quadro</h2>
+            <button id="fechar-create-board">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+            <input id="nome-create-board" type="text" placeholder="nome">
+            <p class="texto-escolha-cor"> escolha a cor do seu board: </p>
+            <input type="color" id="input-cor" >
+            <button id="botao-concluido-create-board">criar</button>
+        </div>
+    </div>
+    
+    <div id="container-criar-lista">
+        <div id="create-list-form">
+            <h2>Criar Lista</h2>
+            <button id="fechar-create-list">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <input id="nome-create-list" type="text" placeholder="nome">
+            <button id="botao-concluido-create-list">criar</button>
+        </div>
+    </div>
+
+    <div id="container-criar-cartao">
+        <div id="create-card-form">
+            <h2>Adicionar Cartão</h2>
+            <button id="fechar-create-card">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <input id="nome-create-card" type="text" placeholder="nome">
+            <button id="botao-concluido-create-card">criar</button>
+        </div>
+    </div>
+
+    <div id="container-editar-perfil">
+        <div id="editar-perfil-form">
+            <h2>Editar perfil</h2>
+            <button id="fechar-editar-perfil">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <form action="submit" id="form-edit-perfil">
+                <input name="avatar" type="text" placeholder="editar avatar">
+                <input name="name" type="text" placeholder="editar nome">
+                <div class="container-password">
+                    <input type="password" class="passwords" name="password" placeholder="Password">
+                    <button type="button" class="show-hide-password">
+                        <i class="fa-regular fa-eye"></i>
+                    </button>
+                </div>
+                <button type="submit">Editar</button>
+            </form>
+            
+        </div>
+    </div>
+
+    
+<!-- 
+    <div id="home" class="home">
+        Home
+        <a href="index.html" id="sair" >sair</a>
+    </div> -->
+
+    <div class="mensagem-cadastro">
+        <h2>Usuario cadastrado com sucesso!</h2>
+        <button class="botao-mensagem-cadastro">ok</button>
+    </div>
+</body>
+
+</html>
