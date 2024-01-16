@@ -9,7 +9,7 @@ const tituloLogin = document.getElementsByClassName("titulo-login")[0];
 const formLogin = document.getElementById("form-login");
 const formCreateUser = document.getElementById("form-create-user");
 const forms = document.getElementById("forms");
-const botao_msg_cadastro = document.getElementsByClassName("botao-mensagem-cadastro")[0];
+
 const div_msg_cadastro = document.getElementsByClassName("mensagem-cadastro")[0];
 const botao_cadastro = document.getElementsByClassName("botao-cadastro")[0];
 const container_home = document.getElementById("container-home");
@@ -33,23 +33,37 @@ if(token) {
   body.style.color = "#f9fafb"
   getBoards();
   getUserProps();
+}
 
-  show_all_button.forEach(botao => {
-    botao.addEventListener("click", () => {
-      getBoards();
-    });
-  })
+show_all_button.forEach(botao => {
+  botao.addEventListener("click", () => {
 
-  show_favoritos_button.addEventListener("click", () => {
-    getBoards("favoritos")
-  })
+    getBoards();
+  });
+})
 
+show_favoritos_button.addEventListener("click", () => {
+  getBoards("favoritos")
+})
+
+async function getUserPropsPerfil() {
+  var img_perfil_atual = document.getElementById("img_perfil_atual")
+  var nome_perfil = document.getElementById("nome_perfil")
+  var username_perfil = document.getElementById("username_perfil")
+  const user = await User.me();
+
+  img_perfil_atual.src = user.avatar_url;
+  nome_perfil.innerHTML = user.name;
+  username_perfil.innerHTML = `<p>username: ${user.username}</p>`;
 }
 
 button_perfil.addEventListener("click", () => {
   const container_editar_perfil = document.getElementById("container-editar-perfil");
   const fechar_editar_perfil = document.getElementById("fechar-editar-perfil");
   const form_edit_perfil = document.getElementById("form-edit-perfil");
+  
+
+  getUserPropsPerfil()
 
   form_edit_perfil.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -106,16 +120,15 @@ async function showBoard(id) {
 
   board_content_name.innerText = board.name;
 
-  var cardsLists = [];
+  var lists = [];
   for(let list of board.lists) {
-    const card = await User.getCardsList(list.id);
-    cardsLists.push(...card);
+    const listData = await User.getList(list.id);
+    lists.push(listData);
   }
 
   board_content_container.innerHTML = `
     ${
-      board.lists.map(list => {
-        const listCards = cardsLists.filter(card => card.list_id == list.id);
+      lists.map(list => {
         return (
           `<div class="board-lists">
             <div class="list-header">
@@ -127,15 +140,36 @@ async function showBoard(id) {
             </div>
   
             ${
-              listCards.map(card => {
+              list.cards.map(card => {
                 return (
                   `
-                    <div class="board-list-card">
-                      ${card.name}
-                      <button class="delete-card">
-                        <span style="opacity: 0; position: absolute;">${card.id}</span>
-                        <i class="fa-solid fa-trash"></i>
-                      </button>
+                    <div class="board-list-card" data-cardid="${card.id}">
+                      <div>
+                        <div class="card-tags">
+                          ${
+                            card.tags.map(tag => {
+                              return `
+                                <div class="tag" data-cardid="${card.id}" data-color="${tag.color}"></div>
+                              `
+                            }).join("")
+                          }
+                        </div>
+                        ${card.name}
+                        <button class="delete-card">
+                          <span style="opacity: 0; position: absolute;">${card.id}</span>
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
+                      <div>
+                          <div>
+                            <i class="fa-regular fa-comment"></i>
+                            <span>${card.cardcomments_count}</span>
+                          </div>
+                          <div>
+                            <i class="fa-solid fa-users"></i>
+                            <span>${card.cardmembers_count}</span>
+                          </div>
+                      </div>
                     </div>
                   `
                 )
@@ -189,6 +223,135 @@ async function showBoard(id) {
       await User.deleteCard(cardId);
       window.location.reload();
     })
+  });
+
+  const cards = Object.values(document.getElementsByClassName("board-list-card"));
+  const tags = Object.values(document.getElementsByClassName("tag"));
+  cards.forEach(card => {
+    const card_id = parseInt(card.getAttribute("data-cardid"));
+
+    const currentTags = tags.filter(tag => {
+      const cardId = tag.getAttribute("data-cardid");
+      return card_id == cardId
+    });
+
+    currentTags.forEach(tag => {
+      const card_color = tag.getAttribute("data-color");
+      tag.style.backgroundColor = card_color
+    })
+
+    card.addEventListener("click", () => {
+      openCard(card_id);
+    })
+  })
+}
+
+async function openCard(cardId) {
+  const cardData = await User.getCard(cardId);
+
+  const container_card = document.getElementById("container-card");
+  const card_form = document.getElementById("card-form");
+
+  container_card.classList.add("active");
+
+  const members = await User.getAll();
+  const membersIds = cardData.cardmembers.map(m => m.member_id);
+  var membersData = [];
+  membersIds.forEach(id => {
+    membersData.push(members.find(m => m.id == id))
+  });
+
+  console.log(membersData)
+
+  card_form.innerHTML += `
+    <div>
+      <h3>${cardData.name}</h3>
+      ${cardData.date ? `<p>${new Date(cardData.date).toLocaleString("pt-br")}</p>` : ""}
+
+      <div>
+        <h4>Comentários</h4>
+        ${
+          cardData.cardcomments.map(item => {
+            const member = members.find(m => m.id == item.member_id);
+            return `
+              <div>
+                ${ member.avatar_url ? (
+                  `<img src="${member.avatar_url}" alt="${member.username}">`               
+                ) : (
+                  `<div class="user-null">
+                    <i class="fa-regular fa-user"></i>
+                  </div>`
+                )}
+                
+                ${item.comment}
+              </div>
+            `
+          }).join("")
+        }
+        
+        <form class="create-comment">
+          <input type="text" placeholder="Adicione um comentário" name="comment"></input>
+          <button type="submit" class="create-comment-button">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="container-members">
+      <h3>Adicionar Membro</h3>
+      <form class="card-member">
+        <input type="text" name="username" placeholder="Insira o username">
+        <button type="submit" class="create-comment-button">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </form>
+
+      <h3>Membros</h3>
+
+      <ul class="list-members">
+        ${
+          membersData.map(member => {
+            return `
+              <li>
+                ${ member.avatar_url ? (
+                  `<img src="${member.avatar_url}" alt="${member.username}">`               
+                ) : (
+                  `<div class="user-null">
+                    <i class="fa-regular fa-user"></i>
+                  </div>`
+                )}
+                <span>${member.name}</span>
+              </li>
+            `
+          }).join("")
+        }
+      </ul>
+    </div>
+  `
+
+  const create_comment_forms = Object.values(document.getElementsByClassName("create-comment"));
+  create_comment_forms.forEach(form => {
+    form.addEventListener("submit", async e => {
+      e.preventDefault()
+      const comment = new FormData(form).get("comment");
+      
+      await User.createCardComment(cardId, comment);
+      window.location.reload();
+    })
+  })
+  
+  const card_member_forms = Object.values(document.getElementsByClassName("card-member"));
+  card_member_forms.forEach(form => {
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const username = formData.get("username");
+
+      await User.createCardMember(cardId, username);
+      window.location.reload();
+    })
   })
 }
 
@@ -234,12 +397,14 @@ async function createCard(listId) {
   });
 }
 
+var user_name = document.getElementById("user_name")
 async function getUserProps() {
   const user = await User.me();
 
   const user_image = document.getElementById("user-image");
 
   user_image.src = user.avatar_url;
+  user_name.innerHTML = user.name;
 }
 
 async function getBoards(filter){
@@ -353,25 +518,29 @@ function createBoard(){
   
 }
 
-formLogin.addEventListener("submit", (event) => {
+formLogin.addEventListener("submit", async event => {
   event.preventDefault();
   let formData = new FormData(formLogin);
-  User.login(formData).then(token => {
+  try {
+    const token = await User.login(formData);
     Token.saveToken(token);
-     forms.style.display = "none"
-     tituloLogin.style.display = "none"
-     container_home.classList.add("active");
-     body.style.background = "#0f172a";
-     body.style.color = "#f9fafb"
-     getBoards();
-     getUserProps();
-  });
+    forms.style.display = "none"
+    tituloLogin.style.display = "none"
+    container_home.classList.add("active");
+    body.style.background = "#0f172a";
+    body.style.color = "#f9fafb"
+    getBoards();
+    getUserProps();
+
+  } catch (error) {
+    alert(error.message)
+  }
   
 });
 
 formCreateUser.addEventListener("submit", (event) => {
   event.preventDefault();
-
+  const texto_erro_cadastro = document.getElementById("texto_erro_cadastro")
   const name = document.getElementById("new-name").value;
   const username = document.getElementById("new-username").value;
   const password = document.getElementById("new-password").value;
@@ -379,9 +548,16 @@ formCreateUser.addEventListener("submit", (event) => {
   
   User.create(name, username, password, avatar).then(user=>{
     console.log(user);
-    div_msg_cadastro.classList.toggle("active")
+    div_msg_cadastro.classList.toggle("active");
+    setTimeout(() => {
+      div_msg_cadastro.classList.toggle("active");
+      formLogin.classList.remove("hidden");
+      formCreateUser.classList.remove("active");
+    }, 2000);
   }).catch(error => {
     console.log(error.message);
+    texto_erro_cadastro.innerHTML = error;
+
   });
   
   
@@ -398,14 +574,3 @@ botao_cadastro.addEventListener('click', () => {
   formLogin.classList.add("hidden");
   formCreateUser.classList.add("active");
 })
-
-botao_msg_cadastro.addEventListener('click', (e) =>{
-  div_msg_cadastro.classList.toggle("active");
-  formCreateUser.classList.remove("active");
-  formLogin.classList.remove("hidden");
-})
-
-
-
-
-

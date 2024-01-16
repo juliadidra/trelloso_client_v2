@@ -40,6 +40,7 @@
         <div class="form-container">
             <form id="form-create-user" class="form-cadastro">
                 <h3>Cadastrar Usuário</h3>
+                <p id="texto_erro_cadastro"></p>
                 <input type="text" name="name" id="new-name" placeholder="Nome">
                 <input type="text" name="username" id="new-username" placeholder="Username">
                 <div class="container-password">
@@ -50,7 +51,7 @@
                 </div>
                 <input type="text" name="avatar" id="new-avatar" placeholder="Avatar URL">
                 <input type="submit" value="Ok">
-                <button id="cancel-create-user">Cancelar</button>
+                <button type="button" id="cancel-create-user">Cancelar</button>
             </form>
             
             <form id="form-login">
@@ -59,7 +60,7 @@
                 <input type="password" name="password" id="password" class="input-senha">
                 <input type="submit" value="Ok" class="botao-ok-login">
                 <input type="reset" value="Cancelar" class="botao-cancelar-login">
-                <button class="botao-cadastro">cadastro</button>
+                <button type="button" class="botao-cadastro">cadastro</button>
             </form>
         </div>
             
@@ -86,8 +87,11 @@
                 <div id="top-bar-user-image">
                     <img id="user-image" src="" alt="">
                 </div>
+                <h2 id="user_name"></h2>
             </div>
+            
             <div id="boards-container">
+                
 
             </div>
             <div id="board-content">
@@ -138,17 +142,32 @@
         </div>
     </div>
 
+    <div id="container-card">
+        <div id="card-form">
+            <button onclick="fecharCard()" id="fechar-card">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    </div>
+
     <div id="container-editar-perfil">
         <div id="editar-perfil-form">
-            <h2>Editar perfil</h2>
+
+            <h2> Perfil</h2>
+            <div id="container_img_perfil_atual">
+                <img id="img_perfil_atual" alt="">
+            </div>
+            <h3 id="nome_perfil">   </h3>
+            <p id="username_perfil"></p>
             <button id="fechar-editar-perfil">
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <form action="submit" id="form-edit-perfil">
+                <h3>Editar perfil</h3>
                 <input name="avatar" type="text" placeholder="editar avatar">
                 <input name="name" type="text" placeholder="editar nome">
                 <div class="container-password">
-                    <input type="password" class="passwords" name="password" placeholder="Password">
+                    <input type="password" class="passwords" name="password" placeholder="new Password">
                     <button type="button" class="show-hide-password">
                         <i class="fa-regular fa-eye"></i>
                     </button>
@@ -159,17 +178,26 @@
         </div>
     </div>
 
-    
-<!-- 
-    <div id="home" class="home">
-        Home
-        <a href="index.html" id="sair" >sair</a>
-    </div> -->
+
 
     <div class="mensagem-cadastro">
         <h2>Usuario cadastrado com sucesso!</h2>
-        <button class="botao-mensagem-cadastro">ok</button>
     </div>
+
+    <script>
+        function fecharCard() {
+            const container_card = document.getElementById("container-card");
+            const card_form = document.getElementById("card-form");
+
+            container_card.classList.remove("active");
+
+            card_form.innerHTML = `
+            <button onclick="fecharCard()" id="fechar-card">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            `
+        }
+    </script>
 </body>
 
 </html>

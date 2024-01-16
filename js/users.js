@@ -9,7 +9,7 @@ async function login(loginFormData) {
 async function updatePerfil(nome, avatar_url, senha) {
     const userData = await me()
     const user = {
-        nome, avatar_url, senha, username: userData.username
+        name: nome, avatar_url, password: senha, username: userData.username
     };
 
     const update_perfil = await Fetch.request(`/users/${userData.id}`, user, "PATCH");
@@ -19,6 +19,10 @@ async function updatePerfil(nome, avatar_url, senha) {
 async function getAll() {
     const users = await Fetch.request('/users')
     return users;
+}
+
+async function getUser(userId) {
+    return await Fetch.request(`/users/${userId}`);
 }
 
 async function create(name, username, password, avatar) {
@@ -55,6 +59,10 @@ async function createList(listName, boardId) {
     return newList;
 }
 
+async function getList(listId) {
+    return await Fetch.request(`/lists/${listId}`);
+}
+
 async function deleteList(listId) {
     return await fetch.request(`/lists/${listId}`, undefined, "DELETE");
 }
@@ -76,8 +84,33 @@ async function createCard(cardName, listId) {
     return newCard;
 }
 
+async function getCard(cardId) {
+    return await Fetch.request(`/cards/${cardId}`);
+}
+
 async function deleteCard(cardId) {
     return await Fetch.request(`/cards/${cardId}`, undefined, "DELETE")
+}
+
+async function createCardComment(cardId, comment) {
+    const newComment = {
+        card_id: cardId,
+        comment: comment
+    };
+
+    return await Fetch.request("/card_comments", newComment, "POST");
+}
+
+async function createCardMember(cardId, username) {
+    const users = await getAll();
+    const currentUser = users.find(user => user.username == username);
+
+    const member = {
+        card_id: cardId,
+        member_id: currentUser.id
+    }
+
+    return await Fetch.request("/card_members", member, "POST");
 }
 
 async function createboard(name, color, favorito, id) {
@@ -106,14 +139,19 @@ async function updateBoard({ id, name, color, favorito }) {
 export default { 
     login, 
     getAll, 
-    create, 
+    create,
+    getUser,
     me, 
     getBoards, 
     getBoard, 
-    createList, 
+    createList,
+    getList,
     deleteList, 
     createCard,
+    getCard,
     deleteCard,
+    createCardComment,
+    createCardMember,
     getCardsList, 
     createboard, 
     deleteBoard, 

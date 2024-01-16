@@ -127,17 +127,38 @@ fieldset {
   margin: 0;
 }
 
+#texto_erro_cadastro{
+  font-size: 14px;
+  color: #be123c;
+}
+
 .mensagem-cadastro{
-  display: none;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 50vw;
-  height: 50vh;
+  width: 100vw;
+  height: 100vh;
+  transition: all 0.1s ease-in-out;
+  pointer-events: none;
 }
 
 .mensagem-cadastro.active{
-  display: flex;
+  pointer-events: all;
+  opacity: 1;
+}
+
+.mensagem-cadastro > h2 {
+  transform: scale(0);
+  transition: all 0.1s ease-in-out;
+}
+.mensagem-cadastro.active > h2 {
+  transform: scale(1);
 }
 
 .botao-ok-login , .botao-cancelar-login {
